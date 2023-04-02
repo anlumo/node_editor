@@ -1,23 +1,51 @@
+import 'dart:collection';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:node_editor/constants.dart';
 import 'package:node_editor/cubit/node_cubit.dart';
 import 'package:node_editor/node_definition.dart';
+import 'package:node_editor/widgets/edge_widget.dart';
+import 'package:node_editor/widgets/node_connector.dart';
 import 'package:node_editor/widgets/node_widget.dart';
 import 'package:uuid/uuid.dart';
 
-class NodeCanvas extends StatelessWidget {
-  const NodeCanvas(
-      {Key? key, required this.nodeDefinitions, required this.nodes})
+class DraggingEdge {
+  Offset destination;
+  Offset source;
+  Color color;
+  bool output;
+
+  DraggingEdge({
+    required this.source,
+    required this.destination,
+    required this.color,
+    required this.output,
+  });
+}
+
+class NodeCanvas extends StatefulWidget {
+  NodeCanvas({Key? key, required this.nodeDefinitions, required this.nodes})
       : super(key: key);
 
   final Map<String, NodeDefinition> nodeDefinitions;
   final Map<UuidValue, NodeData> nodes;
 
+  final GlobalKey stackKey = GlobalKey();
+
+  @override
+  State<NodeCanvas> createState() => _NodeCanvasState();
+}
+
+class _NodeCanvasState extends State<NodeCanvas> {
+  LinkedHashMap<EdgeKey, DraggingEdge> draggingEdges = LinkedHashMap();
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Stack(
+      key: widget.stackKey,
       children: [
         Positioned(
           left: 0,
@@ -31,8 +59,8 @@ class NodeCanvas extends StatelessWidget {
             subdivisions: 2,
           ),
         ),
-        ...nodes.entries.map((keyvalue) {
-          final definition = nodeDefinitions[keyvalue.value.name];
+        ...widget.nodes.entries.map((keyvalue) {
+          final definition = widget.nodeDefinitions[keyvalue.value.name];
 
           return definition != null
               ? BlocProvider(
@@ -51,10 +79,71 @@ class NodeCanvas extends StatelessWidget {
                     color: definition.color,
                     inputs: definition.inputs,
                     outputs: definition.outputs,
+                    onEdgeDragStart: (key, type, position, output) {
+                      final renderBox =
+                          widget.stackKey.currentContext?.findRenderObject();
+
+                      if (renderBox != null) {
+                        final localPosition =
+                            (renderBox as RenderBox).globalToLocal(position);
+                        setState(() {
+                          draggingEdges[key] = DraggingEdge(
+                            source: localPosition,
+                            destination: localPosition,
+                            color: typeColorPalette[type] ?? Colors.red,
+                            output: output,
+                          );
+                        });
+                      }
+                    },
+                    onEdgeDragUpdate: (key, position) {
+                      final renderBox =
+                          widget.stackKey.currentContext?.findRenderObject();
+
+                      if (renderBox != null) {
+                        final localPosition =
+                            (renderBox as RenderBox).globalToLocal(position);
+                        print('drag $localPosition');
+                        setState(() {
+                          final edge = draggingEdges[key];
+                          edge?.destination = localPosition;
+                        });
+                      }
+                    },
+                    onEdgeDragCancel: (key) {
+                      setState(() {
+                        draggingEdges.remove(key);
+                      });
+                    },
+                    onEdgeDragEnd: (key) {
+                      setState(() {
+                        draggingEdges.remove(key);
+                      });
+                    },
                   ),
                 )
               : const SizedBox();
         }).toList(growable: false),
+        ...draggingEdges.values.map((draggingEdge) {
+          final offset = Offset(
+            min(draggingEdge.source.dx, draggingEdge.destination.dx),
+            min(draggingEdge.source.dy, draggingEdge.destination.dy),
+          );
+          final from = draggingEdge.source - offset;
+          final to = draggingEdge.destination - offset;
+          return Positioned(
+            left: offset.dx,
+            top: offset.dy,
+            child: EdgeWidget(
+              size: Size(
+                  (draggingEdge.source.dx - draggingEdge.destination.dx).abs(),
+                  (draggingEdge.source.dy - draggingEdge.destination.dy).abs()),
+              from: draggingEdge.output ? from : to,
+              to: draggingEdge.output ? to : from,
+              color: draggingEdge.color,
+            ),
+          );
+        }),
       ],
     );
   }

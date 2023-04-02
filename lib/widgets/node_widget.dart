@@ -13,11 +13,21 @@ class NodeWidget extends StatefulWidget {
     required this.color,
     this.inputs,
     this.outputs,
+    this.onEdgeDragStart,
+    this.onEdgeDragUpdate,
+    this.onEdgeDragCancel,
+    this.onEdgeDragEnd,
   }) : super(key: key);
 
   final Color color;
   final List<InputSocket>? inputs;
   final List<OutputSocket>? outputs;
+
+  final Function(EdgeKey key, Type type, Offset position, bool output)?
+      onEdgeDragStart;
+  final Function(EdgeKey key, Offset position)? onEdgeDragUpdate;
+  final Function(EdgeKey key)? onEdgeDragCancel;
+  final Function(EdgeKey key)? onEdgeDragEnd;
 
   @override
   State<NodeWidget> createState() => _NodeWidgetState();
@@ -106,6 +116,13 @@ class _NodeWidgetState extends State<NodeWidget> {
                                             type: input.type,
                                             name: input.name,
                                             output: false,
+                                            onEdgeDragStart:
+                                                widget.onEdgeDragStart,
+                                            onEdgeDragUpdate:
+                                                widget.onEdgeDragUpdate,
+                                            onEdgeDragCancel:
+                                                widget.onEdgeDragCancel,
+                                            onEdgeDragEnd: widget.onEdgeDragEnd,
                                           ),
                                         )
                                         .toList(growable: false) ??
@@ -120,6 +137,13 @@ class _NodeWidgetState extends State<NodeWidget> {
                                             type: output.type,
                                             name: output.name,
                                             output: true,
+                                            onEdgeDragStart:
+                                                widget.onEdgeDragStart,
+                                            onEdgeDragUpdate:
+                                                widget.onEdgeDragUpdate,
+                                            onEdgeDragCancel:
+                                                widget.onEdgeDragCancel,
+                                            onEdgeDragEnd: widget.onEdgeDragEnd,
                                           ))
                                       .toList(growable: false) ??
                                   [],

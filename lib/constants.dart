@@ -6,6 +6,7 @@ const double gridSize = 200;
 
 const double connectorBorderWidth = 2;
 const double connectorSize = 10;
+const double edgeWidth = 4;
 
 const typeColorPalette = {
   int: Color.fromRGBO(255, 91, 91, 1),
