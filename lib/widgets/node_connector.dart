@@ -3,15 +3,21 @@ import 'package:node_editor/constants.dart';
 
 class NodeConnector extends StatelessWidget {
   const NodeConnector(
-      {Key? key, required this.name, this.open = true, this.output = false})
+      {Key? key,
+      required this.type,
+      required this.name,
+      this.open = true,
+      this.output = false})
       : super(key: key);
 
+  final Type type;
   final bool output;
   final bool open;
   final String name;
 
   @override
   Widget build(BuildContext context) {
+    final connectorColor = typeColorPalette[type] ?? Colors.red;
     return Row(
       textDirection: output ? TextDirection.rtl : TextDirection.ltr,
       children: [
@@ -19,10 +25,10 @@ class NodeConnector extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: nodePadding.right),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: open ? Colors.transparent : connectorInsideColor,
+              color: open ? Colors.transparent : connectorColor,
               shape: BoxShape.circle,
               border: Border.all(
-                  color: connectorBorderColor, width: connectorBorderWidth),
+                  color: connectorColor, width: connectorBorderWidth),
             ),
             child: const SizedBox(
               width: 10,

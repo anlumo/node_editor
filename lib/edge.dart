@@ -1,13 +1,15 @@
 class InputSocket {
-  InputSocket({required this.name});
+  const InputSocket({required this.name, required this.type});
 
   final String name;
+  final Type type;
 }
 
 class OutputSocket {
-  const OutputSocket({required this.name});
+  const OutputSocket({required this.name, required this.type});
 
   final String name;
+  final Type type;
 }
 
 class Edge {
