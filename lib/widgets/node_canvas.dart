@@ -34,24 +34,26 @@ class NodeCanvas extends StatelessWidget {
         ...nodes.entries.map((keyvalue) {
           final definition = nodeDefinitions[keyvalue.value.name];
 
-          return BlocProvider(
-            create: (context) {
-              final node = keyvalue.value;
-              final cubit = NodeCubit(keyvalue.key);
-              cubit.loaded(
-                x: node.x,
-                y: node.y,
-                name: node.name,
-                edges: node.edges,
-              );
-              return cubit;
-            },
-            child: NodeWidget(
-              color: const Color.fromARGB(255, 182, 0, 18),
-              inputs: definition?.inputs ?? [],
-              outputs: definition?.outputs ?? [],
-            ),
-          );
+          return definition != null
+              ? BlocProvider(
+                  create: (context) {
+                    final node = keyvalue.value;
+                    final cubit = NodeCubit(keyvalue.key);
+                    cubit.loaded(
+                      x: node.x,
+                      y: node.y,
+                      name: node.name,
+                      edges: node.edges,
+                    );
+                    return cubit;
+                  },
+                  child: NodeWidget(
+                    color: definition.color,
+                    inputs: definition.inputs,
+                    outputs: definition.outputs,
+                  ),
+                )
+              : const SizedBox();
         }).toList(growable: false),
       ],
     );

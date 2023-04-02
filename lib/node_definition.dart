@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 class InputSocket {
   const InputSocket({required this.name, required this.type});
 
@@ -14,9 +16,13 @@ class OutputSocket {
 
 class NodeDefinition {
   final String name;
+  final Color color;
   final List<InputSocket> inputs;
   final List<OutputSocket> outputs;
 
   const NodeDefinition(
-      {required this.name, required this.inputs, required this.outputs});
+      {required this.name,
+      required this.color,
+      required this.inputs,
+      required this.outputs});
 }

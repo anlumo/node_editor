@@ -4,6 +4,36 @@ import 'package:node_editor/node_definition.dart';
 import 'package:node_editor/widgets/node_canvas.dart';
 import 'package:uuid/uuid.dart';
 
+const standardDefinitions = {
+  'Add': NodeDefinition(
+    name: 'Add',
+    color: Color.fromARGB(255, 182, 0, 18),
+    inputs: [
+      InputSocket(name: 'a', type: double),
+      InputSocket(name: 'b', type: double)
+    ],
+    outputs: [OutputSocket(name: 'out', type: double)],
+  ),
+  'Tick': NodeDefinition(
+    name: 'Tick',
+    color: Color.fromARGB(255, 0, 124, 182),
+    inputs: [],
+    outputs: [OutputSocket(name: 'out', type: double)],
+  ),
+  'Print': NodeDefinition(
+    name: 'Print',
+    color: Color.fromARGB(255, 235, 192, 0),
+    inputs: [InputSocket(name: 'in', type: String)],
+    outputs: [],
+  ),
+  'ToString': NodeDefinition(
+    name: 'ToString',
+    color: Color.fromARGB(255, 235, 153, 0),
+    inputs: [InputSocket(name: 'in', type: double)],
+    outputs: [OutputSocket(name: 'out', type: String)],
+  ),
+};
+
 void main() {
   runApp(const MyApp());
 }
@@ -51,21 +81,7 @@ class _NodeEditorState extends State<NodeEditor> {
           children: [
             Expanded(
               child: NodeCanvas(
-                nodeDefinitions: const {
-                  'Add': NodeDefinition(
-                    name: 'Add',
-                    inputs: [
-                      InputSocket(name: 'a', type: double),
-                      InputSocket(name: 'b', type: double)
-                    ],
-                    outputs: [OutputSocket(name: 'out', type: double)],
-                  ),
-                  'Tick': NodeDefinition(
-                    name: 'Tick',
-                    inputs: [],
-                    outputs: [OutputSocket(name: 'out', type: double)],
-                  ),
-                },
+                nodeDefinitions: standardDefinitions,
                 nodes: nodes,
               ),
             ),
@@ -74,32 +90,25 @@ class _NodeEditorState extends State<NodeEditor> {
               elevation: 10,
               child: SizedBox(
                 width: 100,
-                child: Column(children: [
-                  Padding(
+                child: Column(
+                    children: standardDefinitions.values.map((def) {
+                  return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: MaterialButton(
                       onPressed: () {
                         setState(() {
                           nodes[uuid.v4obj()] = NodeData(
-                              x: 100, y: 100, name: 'Add', edges: const []);
+                            x: 100,
+                            y: 100,
+                            name: def.name,
+                            edges: const [],
+                          );
                         });
                       },
-                      child: const Text('Add'),
+                      child: Text(def.name),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: MaterialButton(
-                      onPressed: () {
-                        setState(() {
-                          nodes[uuid.v4obj()] = NodeData(
-                              x: 100, y: 100, name: 'Tick', edges: const []);
-                        });
-                      },
-                      child: const Text('Tick'),
-                    ),
-                  ),
-                ]),
+                  );
+                }).toList(growable: false)),
               ),
             ),
           ],

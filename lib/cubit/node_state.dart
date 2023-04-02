@@ -6,11 +6,12 @@ abstract class NodeState {}
 class NodeInitial extends NodeState {}
 
 class NodeData extends NodeState {
-  NodeData(
-      {required this.x,
-      required this.y,
-      required this.name,
-      required this.edges});
+  NodeData({
+    required this.x,
+    required this.y,
+    required this.name,
+    required this.edges,
+  });
 
   final double x;
   final double y;
