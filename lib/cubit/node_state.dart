@@ -5,10 +5,15 @@ abstract class NodeState {}
 
 class NodeInitial extends NodeState {}
 
-class NodeLoaded extends NodeState {
-  NodeLoaded({required this.x, required this.y, required this.name});
+class NodeData extends NodeState {
+  NodeData(
+      {required this.x,
+      required this.y,
+      required this.name,
+      required this.edges});
 
   final double x;
   final double y;
   final String name;
+  final List<Edge> edges;
 }

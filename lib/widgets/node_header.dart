@@ -31,7 +31,7 @@ class NodeHeader extends StatelessWidget {
           center: Alignment.topRight,
           startAngle: 0,
           endAngle: pi,
-          colors: [nodeBackgroundColor, color],
+          colors: [Colors.transparent, color],
         ),
       ),
       child: Padding(

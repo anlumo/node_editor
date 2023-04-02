@@ -1,16 +1,4 @@
-class InputSocket {
-  const InputSocket({required this.name, required this.type});
-
-  final String name;
-  final Type type;
-}
-
-class OutputSocket {
-  const OutputSocket({required this.name, required this.type});
-
-  final String name;
-  final Type type;
-}
+import 'package:node_editor/node_definition.dart';
 
 class Edge {
   final InputSocket? input;
