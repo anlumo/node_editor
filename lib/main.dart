@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:node_editor/cubit/node_cubit.dart';
 import 'package:node_editor/edge.dart';
 import 'package:node_editor/node_definition.dart';
 import 'package:node_editor/widgets/node_canvas.dart';
@@ -117,7 +116,7 @@ class _NodeEditorState extends State<NodeEditor> {
                             x: 100,
                             y: 100,
                             name: def.name,
-                            edges: const [],
+                            edges: [],
                           );
                         });
                       },

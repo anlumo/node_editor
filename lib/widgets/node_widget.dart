@@ -45,11 +45,11 @@ class _NodeWidgetState extends State<NodeWidget> {
   Widget build(BuildContext context) {
     return BlocBuilder<NodeCubit, NodeState>(
       builder: (context, state) {
-        if (state is NodeData) {
+        if (state is NodeLoaded) {
           final cubit = BlocProvider.of<NodeCubit>(context);
           return Positioned(
-            left: state.x + (draggingOffset?.dx ?? 0),
-            top: state.y + (draggingOffset?.dy ?? 0),
+            left: state.data.x + (draggingOffset?.dx ?? 0),
+            top: state.data.y + (draggingOffset?.dy ?? 0),
             child: FractionalTranslation(
               translation: const Offset(-.5, -.5), // center alignment
               child: MouseRegion(
@@ -77,10 +77,10 @@ class _NodeWidgetState extends State<NodeWidget> {
                   },
                   onPanEnd: (event) {
                     BlocProvider.of<NodeCubit>(context).loaded(
-                      x: state.x + (draggingOffset?.dx ?? 0),
-                      y: state.y + (draggingOffset?.dy ?? 0),
-                      name: state.name,
-                      edges: state.edges,
+                      x: state.data.x + (draggingOffset?.dx ?? 0),
+                      y: state.data.y + (draggingOffset?.dy ?? 0),
+                      name: state.data.name,
+                      edges: state.data.edges,
                     );
                     setState(() {
                       draggingStartPosition = null;
@@ -106,7 +106,7 @@ class _NodeWidgetState extends State<NodeWidget> {
                           NamedAreaGridPlacement(
                             areaName: 'header',
                             child: NodeHeader(
-                              title: state.name,
+                              title: state.data.name,
                               color: widget.color,
                             ),
                           ),

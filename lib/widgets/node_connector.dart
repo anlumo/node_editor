@@ -66,12 +66,12 @@ class NodeConnector extends StatelessWidget {
     final connectorColor = typeColorPalette[type] ?? Colors.red;
     return BlocBuilder<NodeCubit, NodeState>(
       builder: (context, state) {
-        final open = (state is NodeData)
+        final open = (state is NodeLoaded)
             ? !(output
-                ? state.edges
-                    .any((Edge element) => element.output?.name == name)
-                : state.edges
-                    .any((Edge element) => element.input?.name == name))
+                ? state.data.edges
+                    .any((Edge element) => element.output.name == name)
+                : state.data.edges
+                    .any((Edge element) => element.input.name == name))
             : true;
         final node = BlocProvider.of<NodeCubit>(context);
         final key =

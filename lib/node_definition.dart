@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:node_editor/edge.dart';
+
 class InputSocket {
   const InputSocket({required this.name, required this.type});
 
@@ -25,4 +27,18 @@ class NodeDefinition {
       required this.color,
       required this.inputs,
       required this.outputs});
+}
+
+class NodeData {
+  NodeData({
+    required this.x,
+    required this.y,
+    required this.name,
+    required this.edges,
+  });
+
+  final double x;
+  final double y;
+  final String name;
+  final List<Edge> edges;
 }

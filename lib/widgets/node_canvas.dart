@@ -50,6 +50,8 @@ class _NodeCanvasState extends State<NodeCanvas> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final edges = widget.nodes.values.expand((node) => node.edges).toSet();
+
     return Stack(
       key: widget.stackKey,
       children: [
@@ -130,6 +132,27 @@ class _NodeCanvasState extends State<NodeCanvas> {
                 )
               : const SizedBox();
         }).toList(growable: false),
+        ...edges.map((edge) {
+          // final offset = Offset(
+          //   min(edge.from.dx, draggingEdge.destination.dx),
+          //   min(draggingEdge.source.dy, draggingEdge.destination.dy),
+          // );
+          // final from = draggingEdge.source - offset;
+          // final to = draggingEdge.destination - offset;
+          // return Positioned(
+          //   left: edge.dx,
+          //   top: offset.dy,
+          //   child: EdgeWidget(
+          //     size: Size(
+          //         (draggingEdge.source.dx - draggingEdge.destination.dx).abs(),
+          //         (draggingEdge.source.dy - draggingEdge.destination.dy).abs()),
+          //     from: draggingEdge.output ? from : to,
+          //     to: draggingEdge.output ? to : from,
+          //     color: draggingEdge.color,
+          //   ),
+          // );
+          return const SizedBox();
+        }),
         ...draggingEdges.values.map((draggingEdge) {
           final offset = Offset(
             min(draggingEdge.source.dx, draggingEdge.destination.dx),
