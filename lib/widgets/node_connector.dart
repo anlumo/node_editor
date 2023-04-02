@@ -26,16 +26,26 @@ class NodeConnector extends StatelessWidget {
                     .any((Edge element) => element.input?.name == name))
             : true;
 
-        return MouseRegion(
-          cursor: SystemMouseCursors.move,
-          child: GestureDetector(
-            onDoubleTap: () {
-              // todo: set constant workflow
-            },
-            child: Row(
-              textDirection: output ? TextDirection.rtl : TextDirection.ltr,
-              children: [
-                Padding(
+        return Row(
+          textDirection: output ? TextDirection.rtl : TextDirection.ltr,
+          children: [
+            MouseRegion(
+              cursor: SystemMouseCursors.move,
+              child: Draggable(
+                hitTestBehavior: HitTestBehavior.opaque,
+                feedback: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: connectorColor,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                        color: connectorColor, width: connectorBorderWidth),
+                  ),
+                  child: const SizedBox(
+                    width: connectorSize,
+                    height: connectorSize,
+                  ),
+                ),
+                child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: nodePadding.right),
                   child: DecoratedBox(
                     decoration: BoxDecoration(
@@ -45,15 +55,15 @@ class NodeConnector extends StatelessWidget {
                           color: connectorColor, width: connectorBorderWidth),
                     ),
                     child: const SizedBox(
-                      width: 10,
-                      height: 10,
+                      width: connectorSize,
+                      height: connectorSize,
                     ),
                   ),
                 ),
-                Text(name)
-              ],
+              ),
             ),
-          ),
+            Text(name)
+          ],
         );
       },
     );
