@@ -26,11 +26,17 @@ class DraggingEdge {
 }
 
 class NodeCanvas extends StatefulWidget {
-  NodeCanvas({Key? key, required this.nodeDefinitions, required this.nodes})
+  NodeCanvas(
+      {Key? key,
+      required this.nodeDefinitions,
+      required this.nodes,
+      required this.onInsertEdge})
       : super(key: key);
 
   final Map<String, NodeDefinition> nodeDefinitions;
   final Map<UuidValue, NodeData> nodes;
+  final Function(UuidValue outputNode, String outputName, UuidValue inputNode,
+      String inputName, Type type) onInsertEdge;
 
   final GlobalKey stackKey = GlobalKey();
 
@@ -103,7 +109,6 @@ class _NodeCanvasState extends State<NodeCanvas> {
                       if (renderBox != null) {
                         final localPosition =
                             (renderBox as RenderBox).globalToLocal(position);
-                        print('drag $localPosition');
                         setState(() {
                           final edge = draggingEdges[key];
                           edge?.destination = localPosition;
@@ -120,6 +125,7 @@ class _NodeCanvasState extends State<NodeCanvas> {
                         draggingEdges.remove(key);
                       });
                     },
+                    onInsertEdge: widget.onInsertEdge,
                   ),
                 )
               : const SizedBox();

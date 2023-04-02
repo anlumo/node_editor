@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:node_editor/cubit/node_cubit.dart';
+import 'package:node_editor/edge.dart';
 import 'package:node_editor/node_definition.dart';
 import 'package:node_editor/widgets/node_canvas.dart';
 import 'package:uuid/uuid.dart';
@@ -83,6 +84,21 @@ class _NodeEditorState extends State<NodeEditor> {
               child: NodeCanvas(
                 nodeDefinitions: standardDefinitions,
                 nodes: nodes,
+                onInsertEdge:
+                    (outputNode, outputName, inputNode, inputName, type) {
+                  setState(() {
+                    final output = nodes[outputNode];
+                    final input = nodes[inputNode];
+                    if (output != null && input != null) {
+                      final edge = Edge(
+                        input: InputSocket(name: inputName, type: type),
+                        output: OutputSocket(name: outputName, type: type),
+                      );
+                      output.edges.add(edge);
+                      input.edges.add(edge);
+                    }
+                  });
+                },
               ),
             ),
             Material(

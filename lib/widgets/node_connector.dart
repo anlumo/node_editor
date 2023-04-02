@@ -9,19 +9,29 @@ import 'package:uuid/uuid.dart';
 class EdgeKey {
   final UuidValue id;
   final String name;
+  final bool output;
+  final Type type;
 
-  const EdgeKey({required this.id, required this.name});
+  const EdgeKey(
+      {required this.id,
+      required this.name,
+      required this.output,
+      required this.type});
 
   @override
   bool operator ==(Object other) {
     if (other is EdgeKey) {
-      return other.id == id && other.name == name;
+      return other.id == id &&
+          other.name == name &&
+          other.output == output &&
+          other.type == type;
     }
     return false;
   }
 
   @override
-  int get hashCode => (id.hashCode ^ name.hashCode);
+  int get hashCode =>
+      (id.hashCode ^ name.hashCode ^ output.hashCode ^ type.hashCode);
 }
 
 class NodeConnector extends StatelessWidget {
@@ -34,6 +44,7 @@ class NodeConnector extends StatelessWidget {
     this.onEdgeDragUpdate,
     this.onEdgeDragCancel,
     this.onEdgeDragEnd,
+    this.onInsertEdge,
   }) : super(key: key);
 
   final Type type;
@@ -45,6 +56,8 @@ class NodeConnector extends StatelessWidget {
   final Function(EdgeKey key, Offset position)? onEdgeDragUpdate;
   final Function(EdgeKey key)? onEdgeDragCancel;
   final Function(EdgeKey key)? onEdgeDragEnd;
+  final Function(UuidValue outputNode, String outputName, UuidValue inputNode,
+      String inputName, Type type)? onInsertEdge;
 
   final connectorKey = GlobalKey();
 
@@ -60,6 +73,9 @@ class NodeConnector extends StatelessWidget {
                 : state.edges
                     .any((Edge element) => element.input?.name == name))
             : true;
+        final node = BlocProvider.of<NodeCubit>(context);
+        final key =
+            EdgeKey(id: node.id, name: name, output: output, type: type);
 
         return Row(
           textDirection: output ? TextDirection.rtl : TextDirection.ltr,
@@ -67,6 +83,7 @@ class NodeConnector extends StatelessWidget {
             MouseRegion(
               cursor: SystemMouseCursors.move,
               child: Draggable(
+                data: key,
                 hitTestBehavior: HitTestBehavior.opaque,
                 feedback: const SizedBox(
                   width: connectorSize,
@@ -81,47 +98,69 @@ class NodeConnector extends StatelessWidget {
                       final position = renderBox.localToGlobal(
                           Offset(size.width / 2, size.height / 2));
 
-                      final node = BlocProvider.of<NodeCubit>(context);
-                      onEdgeDragStart!(EdgeKey(id: node.id, name: name), type,
-                          position, output);
+                      onEdgeDragStart!(key, type, position, output);
                     }
                   }
                 },
                 onDragUpdate: (details) {
                   if (onEdgeDragUpdate != null) {
-                    final node = BlocProvider.of<NodeCubit>(context);
-                    onEdgeDragUpdate!(EdgeKey(id: node.id, name: name),
-                        details.globalPosition);
+                    onEdgeDragUpdate!(key, details.globalPosition);
                   }
                 },
                 onDraggableCanceled: (velocity, offset) {
                   if (onEdgeDragCancel != null) {
-                    final node = BlocProvider.of<NodeCubit>(context);
-                    onEdgeDragCancel!(EdgeKey(id: node.id, name: name));
+                    onEdgeDragCancel!(key);
                   }
                 },
                 onDragEnd: (details) {
                   if (onEdgeDragEnd != null) {
-                    final node = BlocProvider.of<NodeCubit>(context);
-                    onEdgeDragEnd!(EdgeKey(id: node.id, name: name));
+                    onEdgeDragEnd!(key);
                   }
                 },
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: nodePadding.right),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: open ? Colors.transparent : connectorColor,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                          color: connectorColor, width: connectorBorderWidth),
-                    ),
-                    child: SizedBox(
-                      key: connectorKey,
-                      width: connectorSize,
-                      height: connectorSize,
-                    ),
-                  ),
-                ),
+                child: DragTarget(
+                    onWillAccept: (data) {
+                      if (data is EdgeKey) {
+                        return data.output != output && data.type == type;
+                      }
+                      return false;
+                    },
+                    onAccept: (data) {
+                      if (onInsertEdge != null && data is EdgeKey) {
+                        if (output) {
+                          onInsertEdge!(
+                              key.id, key.name, data.id, data.name, type);
+                        } else {
+                          onInsertEdge!(
+                              data.id, data.name, key.id, key.name, type);
+                        }
+                      }
+                    },
+                    hitTestBehavior: HitTestBehavior.opaque,
+                    builder: (context, accepted, rejected) {
+                      final theme = Theme.of(context);
+                      return Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: nodePadding.right),
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: accepted.isEmpty
+                                ? (open ? Colors.transparent : connectorColor)
+                                : theme.colorScheme.secondary,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                                color: accepted.isEmpty
+                                    ? connectorColor
+                                    : theme.colorScheme.secondary,
+                                width: connectorBorderWidth),
+                          ),
+                          child: SizedBox(
+                            key: connectorKey,
+                            width: connectorSize,
+                            height: connectorSize,
+                          ),
+                        ),
+                      );
+                    }),
               ),
             ),
             Text(name)

@@ -6,6 +6,7 @@ import 'package:node_editor/cubit/node_cubit.dart';
 import 'package:node_editor/node_definition.dart';
 import 'package:node_editor/widgets/node_connector.dart';
 import 'package:node_editor/widgets/node_header.dart';
+import 'package:uuid/uuid.dart';
 
 class NodeWidget extends StatefulWidget {
   const NodeWidget({
@@ -17,6 +18,7 @@ class NodeWidget extends StatefulWidget {
     this.onEdgeDragUpdate,
     this.onEdgeDragCancel,
     this.onEdgeDragEnd,
+    this.onInsertEdge,
   }) : super(key: key);
 
   final Color color;
@@ -28,6 +30,8 @@ class NodeWidget extends StatefulWidget {
   final Function(EdgeKey key, Offset position)? onEdgeDragUpdate;
   final Function(EdgeKey key)? onEdgeDragCancel;
   final Function(EdgeKey key)? onEdgeDragEnd;
+  final Function(UuidValue outputNode, String outputName, UuidValue inputNode,
+      String inputName, Type type)? onInsertEdge;
 
   @override
   State<NodeWidget> createState() => _NodeWidgetState();
@@ -123,6 +127,7 @@ class _NodeWidgetState extends State<NodeWidget> {
                                             onEdgeDragCancel:
                                                 widget.onEdgeDragCancel,
                                             onEdgeDragEnd: widget.onEdgeDragEnd,
+                                            onInsertEdge: widget.onInsertEdge,
                                           ),
                                         )
                                         .toList(growable: false) ??
@@ -144,6 +149,7 @@ class _NodeWidgetState extends State<NodeWidget> {
                                             onEdgeDragCancel:
                                                 widget.onEdgeDragCancel,
                                             onEdgeDragEnd: widget.onEdgeDragEnd,
+                                            onInsertEdge: widget.onInsertEdge,
                                           ))
                                       .toList(growable: false) ??
                                   [],
