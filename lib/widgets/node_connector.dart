@@ -76,7 +76,7 @@ class NodeConnector extends StatelessWidget {
       textDirection: output ? TextDirection.rtl : TextDirection.ltr,
       children: [
         MouseRegion(
-          cursor: SystemMouseCursors.move,
+          cursor: SystemMouseCursors.precise,
           child: Draggable(
             data: key,
             hitTestBehavior: HitTestBehavior.opaque,
