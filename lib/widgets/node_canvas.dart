@@ -2,9 +2,7 @@ import 'dart:collection';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:node_editor/constants.dart';
-import 'package:node_editor/cubit/node_cubit.dart';
 import 'package:node_editor/node_definition.dart';
 import 'package:node_editor/widgets/edge_widget.dart';
 import 'package:node_editor/widgets/node_connector.dart';
@@ -71,64 +69,53 @@ class _NodeCanvasState extends State<NodeCanvas> {
           final definition = widget.nodeDefinitions[keyvalue.value.name];
 
           return definition != null
-              ? BlocProvider(
-                  create: (context) {
-                    final node = keyvalue.value;
-                    final cubit = NodeCubit(keyvalue.key);
-                    cubit.loaded(
-                      x: node.x,
-                      y: node.y,
-                      name: node.name,
-                      edges: node.edges,
-                    );
-                    return cubit;
+              ? NodeWidget(
+                  id: keyvalue.key,
+                  color: definition.color,
+                  data: keyvalue.value,
+                  inputs: definition.inputs,
+                  outputs: definition.outputs,
+                  onEdgeDragStart: (key, type, position, output) {
+                    final renderBox =
+                        widget.stackKey.currentContext?.findRenderObject();
+
+                    if (renderBox != null) {
+                      final localPosition =
+                          (renderBox as RenderBox).globalToLocal(position);
+                      setState(() {
+                        draggingEdges[key] = DraggingEdge(
+                          source: localPosition,
+                          destination: localPosition,
+                          color: typeColorPalette[type] ?? Colors.red,
+                          output: output,
+                        );
+                      });
+                    }
                   },
-                  child: NodeWidget(
-                    color: definition.color,
-                    inputs: definition.inputs,
-                    outputs: definition.outputs,
-                    onEdgeDragStart: (key, type, position, output) {
-                      final renderBox =
-                          widget.stackKey.currentContext?.findRenderObject();
+                  onEdgeDragUpdate: (key, position) {
+                    final renderBox =
+                        widget.stackKey.currentContext?.findRenderObject();
 
-                      if (renderBox != null) {
-                        final localPosition =
-                            (renderBox as RenderBox).globalToLocal(position);
-                        setState(() {
-                          draggingEdges[key] = DraggingEdge(
-                            source: localPosition,
-                            destination: localPosition,
-                            color: typeColorPalette[type] ?? Colors.red,
-                            output: output,
-                          );
-                        });
-                      }
-                    },
-                    onEdgeDragUpdate: (key, position) {
-                      final renderBox =
-                          widget.stackKey.currentContext?.findRenderObject();
-
-                      if (renderBox != null) {
-                        final localPosition =
-                            (renderBox as RenderBox).globalToLocal(position);
-                        setState(() {
-                          final edge = draggingEdges[key];
-                          edge?.destination = localPosition;
-                        });
-                      }
-                    },
-                    onEdgeDragCancel: (key) {
+                    if (renderBox != null) {
+                      final localPosition =
+                          (renderBox as RenderBox).globalToLocal(position);
                       setState(() {
-                        draggingEdges.remove(key);
+                        final edge = draggingEdges[key];
+                        edge?.destination = localPosition;
                       });
-                    },
-                    onEdgeDragEnd: (key) {
-                      setState(() {
-                        draggingEdges.remove(key);
-                      });
-                    },
-                    onInsertEdge: widget.onInsertEdge,
-                  ),
+                    }
+                  },
+                  onEdgeDragCancel: (key) {
+                    setState(() {
+                      draggingEdges.remove(key);
+                    });
+                  },
+                  onEdgeDragEnd: (key) {
+                    setState(() {
+                      draggingEdges.remove(key);
+                    });
+                  },
+                  onInsertEdge: widget.onInsertEdge,
                 )
               : const SizedBox();
         }).toList(growable: false),

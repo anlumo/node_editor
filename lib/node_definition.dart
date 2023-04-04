@@ -37,8 +37,8 @@ class NodeData {
     required this.edges,
   });
 
-  final double x;
-  final double y;
-  final String name;
-  final List<Edge> edges;
+  double x;
+  double y;
+  String name;
+  List<Edge> edges;
 }

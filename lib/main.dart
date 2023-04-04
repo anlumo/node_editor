@@ -118,6 +118,8 @@ class _NodeEditorState extends State<NodeEditor> {
                             name: def.name,
                             edges: [],
                           );
+                          print(
+                              'nodes = ${nodes.values.map((node) => 'node(${node.x}, ${node.y})').toList(growable: false)}');
                         });
                       },
                       child: Text(def.name),
