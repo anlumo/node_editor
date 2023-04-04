@@ -68,14 +68,17 @@ class NodeConnector extends StatelessWidget {
   Widget build(BuildContext context) {
     final connectorColor = typeColorPalette[type] ?? Colors.red;
     final open = !(output
-        ? data.edges.any((Edge element) => element.output.name == name)
-        : data.edges.any((Edge element) => element.input.name == name));
+        ? data.edges.any((Edge element) =>
+            element.outputNode == id && element.output.name == name)
+        : data.edges.any((Edge element) =>
+            element.inputNode == id && element.input.name == name));
     final key = EdgeKey(id: id, name: name, output: output, type: type);
 
     return Row(
       textDirection: output ? TextDirection.rtl : TextDirection.ltr,
       children: [
         MouseRegion(
+          key: data.socketKeys[name],
           cursor: SystemMouseCursors.precise,
           child: Draggable(
             data: key,

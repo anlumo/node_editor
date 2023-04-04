@@ -127,15 +127,39 @@ class _NodeCanvasState extends State<NodeCanvas> {
         ...edges.expand((edge) {
           final inputNode = widget.nodes[edge.inputNode];
           final outputNode = widget.nodes[edge.outputNode];
-          if (inputNode == null || outputNode == null) {
+          final inputConnectorKey = inputNode?.socketKeys[edge.input.name];
+          final outputConnectorKey = outputNode?.socketKeys[edge.output.name];
+          if (inputNode == null ||
+              inputConnectorKey == null ||
+              outputNode == null ||
+              outputConnectorKey == null) {
             return [];
           }
+          final inputConnectorRenderBox =
+              inputConnectorKey.currentContext?.findRenderObject();
+          final outputConnectorRenderBox =
+              outputConnectorKey.currentContext?.findRenderObject();
+          final stackRenderBox =
+              widget.stackKey.currentContext?.findRenderObject();
+
+          if (inputConnectorRenderBox == null ||
+              outputConnectorRenderBox == null ||
+              stackRenderBox == null) {
+            return [];
+          }
+          final input = (inputConnectorRenderBox as RenderBox).localToGlobal(
+              const Offset(connectorSize, connectorSize / 2),
+              ancestor: stackRenderBox);
+          final output = (outputConnectorRenderBox as RenderBox).localToGlobal(
+              const Offset(connectorSize, connectorSize / 2),
+              ancestor: stackRenderBox);
+
           final offset = Offset(
-            min(inputNode.position.dx, outputNode.position.dx),
-            min(inputNode.position.dy, outputNode.position.dy),
+            min(input.dx, output.dx),
+            min(input.dy, output.dy),
           );
-          final from = outputNode.position - offset;
-          final to = inputNode.position - offset;
+          final from = output - offset;
+          final to = input - offset;
           return [
             Positioned(
               left: offset.dx,

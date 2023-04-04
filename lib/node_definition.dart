@@ -1,5 +1,4 @@
-import 'dart:ui';
-
+import 'package:flutter/material.dart';
 import 'package:node_editor/edge.dart';
 
 class InputSocket {
@@ -34,9 +33,11 @@ class NodeData {
     required this.position,
     required this.name,
     required this.edges,
+    required this.socketKeys,
   });
 
   Offset position;
   String name;
   List<Edge> edges;
+  Map<String, GlobalKey> socketKeys;
 }

@@ -118,6 +118,25 @@ class _NodeEditorState extends State<NodeEditor> {
                             position: const Offset(100, 100),
                             name: def.name,
                             edges: [],
+                            socketKeys: Map.unmodifiable(Map.fromEntries(
+                              def.inputs
+                                  .map(
+                                    (socket) => MapEntry(
+                                        socket.name,
+                                        GlobalKey(
+                                            debugLabel:
+                                                'Node $uuid Connector ${socket.name}')),
+                                  )
+                                  .followedBy(
+                                    def.outputs.map(
+                                      (socket) => MapEntry(
+                                          socket.name,
+                                          GlobalKey(
+                                              debugLabel:
+                                                  'Node $uuid Connector ${socket.name}')),
+                                    ),
+                                  ),
+                            )),
                           );
                         });
                       },
