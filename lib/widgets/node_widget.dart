@@ -19,6 +19,7 @@ class NodeWidget extends StatefulWidget {
     this.onEdgeDragCancel,
     this.onEdgeDragEnd,
     this.onInsertEdge,
+    required this.onNodeMoved,
   }) : super(key: key);
 
   final UuidValue id;
@@ -35,19 +36,21 @@ class NodeWidget extends StatefulWidget {
   final Function(UuidValue outputNode, String outputName, UuidValue inputNode,
       String inputName, Type type)? onInsertEdge;
 
+  final Function(Offset newPosition) onNodeMoved;
+
   @override
   State<NodeWidget> createState() => _NodeWidgetState();
 }
 
 class _NodeWidgetState extends State<NodeWidget> {
   Offset? draggingStartPosition;
-  Offset? draggingOffset;
+  Offset? draggingInitialNodePosition;
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      left: widget.data.x + (draggingOffset?.dx ?? 0),
-      top: widget.data.y + (draggingOffset?.dy ?? 0),
+      left: widget.data.position.dx,
+      top: widget.data.position.dy,
       child: FractionalTranslation(
         translation: const Offset(-.5, -.5), // center alignment
         child: MouseRegion(
@@ -58,29 +61,26 @@ class _NodeWidgetState extends State<NodeWidget> {
             onPanDown: (event) {
               setState(() {
                 draggingStartPosition = event.localPosition;
-                draggingOffset = Offset.zero;
+                draggingInitialNodePosition = widget.data.position;
               });
             },
             onPanUpdate: (event) {
-              setState(() {
-                draggingOffset = event.localPosition - draggingStartPosition!;
-              });
+              widget.onNodeMoved(draggingInitialNodePosition! +
+                  event.localPosition -
+                  draggingStartPosition!);
             },
             onPanCancel: () {
+              widget.onNodeMoved(draggingInitialNodePosition!);
               setState(() {
                 draggingStartPosition = null;
-                draggingOffset = null;
+                draggingInitialNodePosition = null;
               });
             },
             onPanEnd: (event) {
-              if (draggingOffset != null) {
-                widget.data.x += draggingOffset!.dx;
-                widget.data.y += draggingOffset!.dy;
-                setState(() {
-                  draggingStartPosition = null;
-                  draggingOffset = null;
-                });
-              }
+              setState(() {
+                draggingStartPosition = null;
+                draggingInitialNodePosition = null;
+              });
             },
             child: Card(
               key: ValueKey(widget.id),

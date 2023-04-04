@@ -90,7 +90,9 @@ class _NodeEditorState extends State<NodeEditor> {
                     final input = nodes[inputNode];
                     if (output != null && input != null) {
                       final edge = Edge(
+                        inputNode: inputNode,
                         input: InputSocket(name: inputName, type: type),
+                        outputNode: outputNode,
                         output: OutputSocket(name: outputName, type: type),
                       );
                       output.edges.add(edge);
@@ -113,13 +115,10 @@ class _NodeEditorState extends State<NodeEditor> {
                       onPressed: () {
                         setState(() {
                           nodes[uuid.v4obj()] = NodeData(
-                            x: 100,
-                            y: 100,
+                            position: const Offset(100, 100),
                             name: def.name,
                             edges: [],
                           );
-                          print(
-                              'nodes = ${nodes.values.map((node) => 'node(${node.x}, ${node.y})').toList(growable: false)}');
                         });
                       },
                       child: Text(def.name),

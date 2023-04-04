@@ -31,14 +31,12 @@ class NodeDefinition {
 
 class NodeData {
   NodeData({
-    required this.x,
-    required this.y,
+    required this.position,
     required this.name,
     required this.edges,
   });
 
-  double x;
-  double y;
+  Offset position;
   String name;
   List<Edge> edges;
 }

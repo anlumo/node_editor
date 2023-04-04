@@ -116,29 +116,41 @@ class _NodeCanvasState extends State<NodeCanvas> {
                     });
                   },
                   onInsertEdge: widget.onInsertEdge,
+                  onNodeMoved: (newPosition) {
+                    setState(() {
+                      widget.nodes[keyvalue.key]?.position = newPosition;
+                    });
+                  },
                 )
               : const SizedBox();
         }).toList(growable: false),
-        ...edges.map((edge) {
-          // final offset = Offset(
-          //   min(edge.from.dx, draggingEdge.destination.dx),
-          //   min(draggingEdge.source.dy, draggingEdge.destination.dy),
-          // );
-          // final from = draggingEdge.source - offset;
-          // final to = draggingEdge.destination - offset;
-          // return Positioned(
-          //   left: edge.dx,
-          //   top: offset.dy,
-          //   child: EdgeWidget(
-          //     size: Size(
-          //         (draggingEdge.source.dx - draggingEdge.destination.dx).abs(),
-          //         (draggingEdge.source.dy - draggingEdge.destination.dy).abs()),
-          //     from: draggingEdge.output ? from : to,
-          //     to: draggingEdge.output ? to : from,
-          //     color: draggingEdge.color,
-          //   ),
-          // );
-          return const SizedBox();
+        ...edges.expand((edge) {
+          final inputNode = widget.nodes[edge.inputNode];
+          final outputNode = widget.nodes[edge.outputNode];
+          if (inputNode == null || outputNode == null) {
+            return [];
+          }
+          final offset = Offset(
+            min(inputNode.position.dx, outputNode.position.dx),
+            min(inputNode.position.dy, outputNode.position.dy),
+          );
+          final from = outputNode.position - offset;
+          final to = inputNode.position - offset;
+          return [
+            Positioned(
+              left: offset.dx,
+              top: offset.dy,
+              child: EdgeWidget(
+                size: Size(
+                    (inputNode.position.dx - outputNode.position.dx).abs(),
+                    (inputNode.position.dy - outputNode.position.dy).abs()),
+                from: from,
+                to: to,
+                color: typeColorPalette[edge.type] ?? Colors.red,
+              ),
+            )
+          ];
+          // return const Positioned(left: 0, top: 0, child: Text('edge!'));
         }),
         ...draggingEdges.values.map((draggingEdge) {
           final offset = Offset(
