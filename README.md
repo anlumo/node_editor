@@ -4,6 +4,8 @@ A very simple node editor inspired by Unreal Engine's Blueprint editor. Doesn't 
 
 This is a tech demo, not a product.
 
+![Screenshot](images/screenshot.jpg)
+
 ## Usage
 
 Install flutter, clone the repository, then run `flutter pub get` and then `flutter run` in it.
