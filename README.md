@@ -1,16 +1,13 @@
-# node_editor
+# Node Editor
 
-A new Flutter project.
+A very simple node editor inspired by Unreal Engine's Blueprint editor. Doesn't do anything right now except placing nodes and connecting them using edges.
 
-## Getting Started
+This is a tech demo, not a product.
 
-This project is a starting point for a Flutter application.
+## Usage
 
-A few resources to get you started if this is your first Flutter project:
+Install flutter, clone the repository, then run `flutter pub get` and then `flutter run` in it.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## LICENSE
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Don't use this for anything except as an inspiration (both as a user and as a programmer).
