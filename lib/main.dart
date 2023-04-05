@@ -89,6 +89,13 @@ class _NodeEditorState extends State<NodeEditor> {
                     final output = nodes[outputNode];
                     final input = nodes[inputNode];
                     if (output != null && input != null) {
+                      // if the input already has an edge, remove the old one first
+                      for (final node in nodes.values) {
+                        node.edges.removeWhere((edge) =>
+                            edge.inputNode == inputNode &&
+                            edge.input.name == inputName);
+                      }
+
                       final edge = Edge(
                         inputNode: inputNode,
                         input: InputSocket(name: inputName, type: type),

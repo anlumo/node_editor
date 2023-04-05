@@ -85,6 +85,17 @@ class _NodeCanvasState extends State<NodeCanvas> {
                       final inputNode = widget.nodes[key.id];
                       if (inputNode != null) {
                         setState(() {
+                          if (!output) {
+                            final oldEdgeIdx = inputNode.edges
+                                .indexWhere((edge) => edge.inputNode == key.id);
+                            if (oldEdgeIdx >= 0) {
+                              final oldEdge = inputNode.edges[oldEdgeIdx];
+                              final outputNode =
+                                  widget.nodes[oldEdge.outputNode];
+                              outputNode?.edges.remove(oldEdge);
+                              inputNode.edges.removeAt(oldEdgeIdx);
+                            }
+                          }
                           draggingEdges[key] = DraggingEdge(
                             name: key.name,
                             node: inputNode,
@@ -96,14 +107,9 @@ class _NodeCanvasState extends State<NodeCanvas> {
                       }
                     },
                     onEdgeDragUpdate: (key, position) {
-                      final renderBox =
-                          widget.stackKey.currentContext?.findRenderObject();
-
-                      if (renderBox != null) {
-                        setState(() {
-                          draggingEdges[key]?.position = position;
-                        });
-                      }
+                      setState(() {
+                        draggingEdges[key]?.position = position;
+                      });
                     },
                     onEdgeDragCancel: (key) {
                       setState(() {
